@@ -58,6 +58,7 @@ const ScriptSchema = z.object({
   exchangeStudentsEnabled: z.boolean().default(true),
   esnersEnabled: z.boolean().default(true),
   newbiesEnabled: z.boolean().default(true),
+  partecipantiEnabled: z.boolean().default(true),
   maxParticipants: z.number().int().positive(),
   maxWaitingList: z.number().int().nonnegative(),
   esnCardRequired: z.boolean().default(true),
@@ -299,16 +300,13 @@ async function autoFillEventForm(data) {
         if (data.descriptionES && tabRow.children[2]) { clickElement(tabRow.children[2], "Tab ES"); await wait(200); await typeIntoEditor("md-editor .ace_content", data.descriptionES); }
     }
 
-    if (data.autoConfirm) clickElement(document.querySelector("ion-list:nth-child(7) ion-checkbox"), "Auto Confirm");
+    if (data.autoConfirm) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-0-lbl"]'), "Auto Confirm");
 
-    const targetList = document.querySelector("ion-list:nth-child(8)");
-    if(targetList) {
-        const items = targetList.querySelectorAll('ion-item');
-        if(data.alumniEnabled && items[2]) clickElement(items[2], "Alumni");
-        if(data.exchangeStudentsEnabled && items[3]) clickElement(items[3], "Exchange");
-        if(data.esnersEnabled && items[4]) clickElement(items[4], "ESNers");
-        if(data.newbiesEnabled && items[5]) clickElement(items[5], "Newbies");
-    }
+    if(data.alumniEnabled) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-1-lbl"]'), "Alumni");
+    if(data.exchangeStudentsEnabled) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-2-lbl"]'), "Exchange Students");
+    if(data.esnersEnabled) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-3-lbl"]'), "ESNers");
+    if(data.newbiesEnabled) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-4-lbl"]'), "Newbies");
+    if(data.partecipantiEnabled) clickElement(document.querySelector('ion-checkbox[aria-labelledby="ion-cb-5-lbl"]'), "Partecipanti");
 
     const capList = document.querySelector("ion-list:nth-child(9)");
     if(capList) {

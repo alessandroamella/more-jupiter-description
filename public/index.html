@@ -212,8 +212,15 @@
           <legend>Impostazioni</legend>
           <label><input type="checkbox" x-model="scriptForm.autoConfirm"> Conferma automatica</label>
           <label><input type="checkbox" x-model="scriptForm.esnCardRequired"> ESN card richiesta</label>
-          <label><input type="checkbox" x-model="scriptForm.exchangeStudentsEnabled"> Abilita exchange</label>
-          <label><input type="checkbox" x-model="scriptForm.esnersEnabled"> Abilita ESNer</label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Chi vede sto evento</legend>
+          <label><input type="checkbox" x-model="scriptForm.alumniEnabled"> Alumni</label>
+          <label><input type="checkbox" x-model="scriptForm.exchangeStudentsEnabled"> In scambio</label>
+          <label><input type="checkbox" x-model="scriptForm.esnersEnabled"> ESNers</label>
+          <label><input type="checkbox" x-model="scriptForm.newbiesEnabled"> Newbies</label>
+          <label><input type="checkbox" x-model="scriptForm.partecipantiEnabled"> Partecipanti</label>
         </fieldset>
 
         <button type="submit" :aria-busy="loading">Vai!!</button>
@@ -285,7 +292,8 @@
           exchangeStudentsEnabled: true,
           esnersEnabled: true,
           newbiesEnabled: true,
-          alumniEnabled: false
+          alumniEnabled: false,
+          partecipantiEnabled: true
         },
 
         // Helper to format dates for display

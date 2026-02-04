@@ -1,0 +1,32 @@
+{
+  "name": "more-jupiter-description",
+  "version": "1.0.0",
+  "scripts": {
+    "check": "bunx biome check",
+    "check:staged": "bunx biome check --staged",
+    "check:write": "bunx biome check --write",
+    "dev:desc": "bun --watch src/index.ts",
+    "dev:script": "bun --watch src/create-jupiter-event.ts",
+    "start": "bun src/index.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "express": "^5.2.1",
+    "libphonenumber-js": "^1.12.36",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.14",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6"
+  },
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

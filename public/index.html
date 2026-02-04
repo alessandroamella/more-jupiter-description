@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jupiter Event Tools</title>
+  <!-- Pico CSS for instant nice looks -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <!-- Alpine JS for logic -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    :root {
+      --primary: #00aabb;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    textarea {
+      font-family: monospace;
+      font-size: 0.85em;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container" x-data="app()">
+    <hgroup>
+      <h1>Jupiter Tools</h1>
+      <h2>ESN Event Generator</h2>
+    </hgroup>
+
+    <!-- Navigation -->
+    <div class="grid">
+      <button :class="tab === 'desc' ? 'active tab-btn' : 'tab-btn'" @click="tab = 'desc'">1. Generate
+        Description</button>
+      <button :class="tab === 'script' ? 'active tab-btn' : 'tab-btn'" @click="tab = 'script'">2. Generate Auto-Fill
+        Script</button>
+    </div>
+
+    <!-- TAB 1: DESCRIPTION GENERATOR -->
+    <article x-show="tab === 'desc'">
+      <h3>Description Generator</h3>
+      <form @submit.prevent="generateDesc">
+        <div class="grid">
+          <label>Event Name
+            <input type="text" x-model="descForm.eventName" required>
+          </label>
+          <label>Fee (€)
+            <input type="number" step="0.01" x-model.number="descForm.fee" required>
+          </label>
+        </div>
+
+        <label>Location
+          <input type="text" x-model="descForm.location" required>
+        </label>
+
+        <div class="grid">
+          <label>Short Desc (IT)
+            <textarea x-model="descForm.shortDescriptions.it" required></textarea>
+          </label>
+          <label>Short Desc (EN)
+            <textarea x-model="descForm.shortDescriptions.en"></textarea>
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label>Event Date
+            <input type="datetime-local" x-model="descForm.eventDate" required>
+          </label>
+          <label>Reg. Deadline
+            <input type="datetime-local" x-model="descForm.registrationDeadline" required>
+          </label>
+          <label>Payment Deadline
+            <input type="datetime-local" x-model="descForm.paymentDeadline" required>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>Fidelity (Modena)
+            <input type="number" x-model.number="descForm.fidelityPointsModena">
+          </label>
+          <label>Fidelity (Reggio)
+            <input type="number" x-model.number="descForm.fidelityPointsReggio">
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>Contact Name
+            <input type="text" x-model="descForm.contactName" required>
+          </label>
+          <label>Phone (+39...)
+            <input type="text" x-model="descForm.contactPhone" required>
+          </label>
+        </div>
+
+        <button type="submit" :aria-busy="loading">Generate Markdown</button>
+      </form>
+
+      <div x-show="descResult" style="margin-top: 20px;">
+        <h4>Result (Italian)</h4>
+        <textarea x-model="descResult.it" rows="10"></textarea>
+        <button class="secondary outline" @click="copyToClipboard(descResult.it)">Copy IT</button>
+        <button class="secondary outline" @click="transferToScript()">Transfer to Script Generator ➡️</button>
+
+        <h4 style="margin-top:20px">Result (English)</h4>
+        <textarea x-model="descResult.en" rows="10"></textarea>
+        <button class="secondary outline" @click="copyToClipboard(descResult.en)">Copy EN</button>
+      </div>
+    </article>
+
+
+    <!-- TAB 2: SCRIPT GENERATOR -->
+    <article x-show="tab === 'script'">
+      <h3>Auto-Fill Script Generator</h3>
+      <form @submit.prevent="generateScript">
+        <label>Title
+          <input type="text" x-model="scriptForm.title" required>
+        </label>
+
+        <div class="grid">
+          <label>Place Name
+            <input type="text" x-model="scriptForm.placeName" required>
+          </label>
+          <label>Address
+            <input type="text" x-model="scriptForm.placeAddress" required>
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label>Event Start
+            <input type="datetime-local" x-model="scriptForm.eventStart" required>
+          </label>
+          <label>Event End
+            <input type="datetime-local" x-model="scriptForm.eventEnd" required>
+          </label>
+          <label>Reg Start
+            <input type="datetime-local" x-model="scriptForm.registrationStart" required>
+          </label>
+          <label>Reg End
+            <input type="datetime-local" x-model="scriptForm.registrationEnd" required>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>Max Participants
+            <input type="number" x-model.number="scriptForm.maxParticipants" required>
+          </label>
+          <label>Waitlist
+            <input type="number" x-model.number="scriptForm.maxWaitingList" required>
+          </label>
+        </div>
+
+        <details>
+          <summary>Full Descriptions (Markdown)</summary>
+          <label>IT
+            <textarea x-model="scriptForm.descriptionIT" rows="5"></textarea>
+          </label>
+          <label>EN
+            <textarea x-model="scriptForm.descriptionEN" rows="5"></textarea>
+          </label>
+        </details>
+
+        <fieldset>
+          <legend>Settings</legend>
+          <label><input type="checkbox" x-model="scriptForm.autoConfirm"> Auto Confirm</label>
+          <label><input type="checkbox" x-model="scriptForm.esnCardRequired"> ESN Card Required</label>
+          <label><input type="checkbox" x-model="scriptForm.exchangeStudentsEnabled"> Enable Exchange</label>
+          <label><input type="checkbox" x-model="scriptForm.esnersEnabled"> Enable ESNers</label>
+        </fieldset>
+
+        <button type="submit" :aria-busy="loading">Generate JS Bookmarklet</button>
+      </form>
+
+      <div x-show="scriptResult" style="margin-top: 20px;">
+        <h4>Generated Script</h4>
+        <p><small>Copy this code and paste it into the Chrome DevTools Console on the Jupiter Create Event page.</small>
+        </p>
+        <textarea x-model="scriptResult" rows="10"></textarea>
+        <button class="secondary outline" @click="copyToClipboard(scriptResult)">Copy Code</button>
+      </div>
+    </article>
+
+  </main>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('app', () => ({
+        tab: 'desc',
+        loading: false,
+        descResult: null,
+        scriptResult: null,
+
+        // Initial Data
+        descForm: {
+          eventName: "Aperitivo Integrazione",
+          fee: 5,
+          location: "Bar Molto Bello",
+          shortDescriptions: { it: "Un bell'evento...", en: "A nice event..." },
+          eventDate: new Date().toISOString().slice(0, 16),
+          registrationDeadline: new Date().toISOString().slice(0, 16),
+          paymentDeadline: new Date().toISOString().slice(0, 16),
+          fidelityPointsModena: 10,
+          fidelityPointsReggio: 10,
+          contactName: "Mario Rossi",
+          contactPhone: "+393331234567"
+        },
+
+        scriptForm: {
+          title: "",
+          placeName: "",
+          placeAddress: "",
+          eventStart: new Date().toISOString().slice(0, 16),
+          eventEnd: new Date().toISOString().slice(0, 16),
+          registrationStart: new Date().toISOString().slice(0, 16),
+          registrationEnd: new Date().toISOString().slice(0, 16),
+          descriptionIT: "",
+          descriptionEN: "",
+          maxParticipants: 50,
+          maxWaitingList: 10,
+          autoConfirm: true,
+          esnCardRequired: true,
+          exchangeStudentsEnabled: true,
+          esnersEnabled: true,
+          newbiesEnabled: true,
+          alumniEnabled: false
+        },
+
+        // Helper to format dates for API (ISO String)
+        toIso(dateStr) {
+          if (!dateStr) return new Date().toISOString();
+          return new Date(dateStr).toISOString();
+        },
+
+        async generateDesc() {
+          this.loading = true;
+          try {
+            // Prepare payload
+            const payload = {
+              ...this.descForm,
+              eventDate: this.toIso(this.descForm.eventDate),
+              registrationDeadline: this.toIso(this.descForm.registrationDeadline),
+              paymentDeadline: this.toIso(this.descForm.paymentDeadline),
+            };
+
+            const res = await fetch('/api/generate-description', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.errors) alert(`Validation Error: ${JSON.stringify(data.errors)}`);
+            else this.descResult = data.data;
+          } catch (e) {
+            alert(e.message);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        // Helper to move data from Tab 1 to Tab 2
+        transferToScript() {
+          this.scriptForm.title = this.descForm.eventName;
+          this.scriptForm.placeName = this.descForm.location;
+          this.scriptForm.eventStart = this.descForm.eventDate;
+          this.scriptForm.registrationEnd = this.descForm.registrationDeadline;
+          if (this.descResult) {
+            this.scriptForm.descriptionIT = this.descResult.it;
+            this.scriptForm.descriptionEN = this.descResult.en;
+          }
+          this.tab = 'script';
+        },
+
+        async generateScript() {
+          this.loading = true;
+          try {
+            const payload = {
+              ...this.scriptForm,
+              eventStart: this.toIso(this.scriptForm.eventStart),
+              eventEnd: this.toIso(this.scriptForm.eventEnd),
+              registrationStart: this.toIso(this.scriptForm.registrationStart),
+              registrationEnd: this.toIso(this.scriptForm.registrationEnd),
+            };
+
+            const res = await fetch('/generate-script', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+              const err = await res.json();
+              alert(`Error: ${JSON.stringify(err)}`);
+              return;
+            }
+
+            const text = await res.text();
+            this.scriptResult = text;
+          } catch (e) {
+            alert(e.message);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        copyToClipboard(text) {
+          navigator.clipboard.writeText(text);
+        }
+      }))
+    });
+  </script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 import { file } from 'bun';
-import { enGB, it, type Locale } from 'date-fns/locale';
+import { enGB, es, it, type Locale } from 'date-fns/locale';
 import { formatInTimeZone } from 'date-fns-tz';
 import {
   isValidPhoneNumber,
@@ -122,7 +122,7 @@ const LOCALES = {
       payDeadline: '⏲️ DEADLINE per i PAGAMENTI',
       howToPayHeader: '**COME PAGARE**',
       paymentInfo: (contactName: string, eventName: string) =>
-        `- tramite contanti o POS nel nostro ufficio a  [Modena](https://www.google.it/maps/place/Via+Ganaceto,+44,+41121+Modena+MO/@44.6483847,10.9220294,17z/data=!3m1!4b1!4m6!3m5!1s0x477fef13dd158f3d:0x51258ed00ccc5826!8m2!3d44.6483847!4d10.9246043!16s%2Fg%2F11c2bqmw_b?entry=ttu)\n- tramite contanti nel nostro ufficio a [Reggio Emilia](https://www.google.it/maps/place/Via+Francesco+Cassoli,+1,+42123+Reggio+Emilia+RE/@44.6923692,10.6277506,17z/data=!3m1!4b1!4m6!3m5!1s0x47801c583ebe73b9:0x1c01d12d02d7a4fc!8m2!3d44.6923692!4d10.6303255!16s%2Fg%2F11c27s25pd?entry=ttu)\n- tramite bonifico a questo IBAN (intestato a ESN Modena e Reggio Emilia - ETS): **IT36Q0200812930000104489759**\n- tramite [Satispay](https://drive.google.com/file/d/1GKRau0IsgBg3NwJpse6g619l9l6jwFw0/view?usp=sharing), cercando "ESN Modena" sull'applicazione\n\nNel caso si paghi tramite bonifico/Satispay bisogna **INVIARE LA RICEVUTA AL RESPONSABILE** con la causale "*${contactName} - ${eventName}*"!\n\nPer partecipare è obbligatorio iscriversi su Jupiter, e la conferma avverrà solo dopo il pagamento.`,
+        `- Tramite contanti o POS nel nostro ufficio a  [Modena](https://www.google.it/maps/place/Via+Ganaceto,+44,+41121+Modena+MO/@44.6483847,10.9220294,17z/data=!3m1!4b1!4m6!3m5!1s0x477fef13dd158f3d:0x51258ed00ccc5826!8m2!3d44.6483847!4d10.9246043!16s%2Fg%2F11c2bqmw_b?entry=ttu)\n- Tramite contanti nel nostro ufficio a [Reggio Emilia](https://www.google.it/maps/place/Via+Francesco+Cassoli,+1,+42123+Reggio+Emilia+RE/@44.6923692,10.6277506,17z/data=!3m1!4b1!4m6!3m5!1s0x47801c583ebe73b9:0x1c01d12d02d7a4fc!8m2!3d44.6923692!4d10.6303255!16s%2Fg%2F11c27s25pd?entry=ttu)\n- Tramite bonifico a questo IBAN (intestato a ESN Modena e Reggio Emilia - ETS): **IT36Q0200812930000104489759**\n- Tramite [Satispay](https://drive.google.com/file/d/1GKRau0IsgBg3NwJpse6g619l9l6jwFw0/view?usp=sharing), cercando "ESN Modena" sull'applicazione\n\nNel caso si paghi tramite bonifico/Satispay bisogna **INVIARE LA RICEVUTA AL RESPONSABILE** con la causale "*${contactName} - ${eventName}*"!\n\nPer partecipare è obbligatorio iscriversi su Jupiter, e la conferma avverrà solo dopo il pagamento.`,
       fidelity: 'Fidelity Points',
       fidelityFormat: (modena: number, reggio: number) =>
         `${modena} per Modena, ${reggio} per Reggio Emilia`,
@@ -149,33 +149,61 @@ const LOCALES = {
       contact: '*For any problems or doubts please contact*:',
     },
   },
+  es: {
+    locale: es,
+    localeStr: 'es-ES',
+    timeSeparator: 'a las',
+    getDescription: (data) => data.shortDescriptions.es ?? null,
+    labels: {
+      when: '📅 CUÁNDO',
+      where: '📌 DÓNDE',
+      fee: '💰 TARIFA',
+      regDeadline: '⏲️ FECHA LÍMITE para INSCRIPCIONES',
+      payDeadline: '⏲️ FECHA LÍMITE para PAGOS',
+      howToPayHeader: '**CÓMO PAGAR**',
+      paymentInfo: (contactName: string, eventName: string) =>
+        `- en efectivo o POS en nuestra oficina en [Modena](https://www.google.it/maps/place/Via+Ganaceto,+44,+41121+Modena+MO/@44.6483847,10.9220294,17z/data=!3m1!4b1!4m6!3m5!1s0x477fef13dd158f3d:0x51258ed00ccc5826!8m2!3d44.6483847!4d10.9246043!16s%2Fg%2F11c2bqmw_b?entry=ttu)\n- en efectivo en nuestra oficina en [Reggio Emilia](https://www.google.it/maps/place/Via+Francesco+Cassoli,+1,+42123+Reggio+Emilia+RE/@44.6923692,10.6277506,17z/data=!3m1!4b1!4m6!3m5!1s0x47801c583ebe73b9:0x1c01d12d02d7a4fc!8m2!3d44.6923692!4d10.6303255!16s%2Fg%2F11c27s25pd?entry=ttu)\n- por transferencia bancaria a este IBAN (titular -> ESN Modena e Reggio Emilia - ETS): **IT36Q0200812930000104489759**\n- por [Satispay](https://drive.google.com/file/d/1GKRau0IsgBg3NwJpse6g619l9l6jwFw0/view?usp=sharing), buscando "ESN Modena" en la aplicación\n\nEn caso de pagar por transferencia bancaria/Satispay debes **ENVIAR EL RECIBO AL RESPONSABLE** con el motivo "*${contactName} - ${eventName}*"!\n\nPara participar es obligatorio registrarse en Jupiter, y la confirmación solo tendrá lugar después del pago.`,
+      fidelity: 'Puntos de Fidelidad',
+      fidelityFormat: (modena: number, reggio: number) =>
+        `${modena} para Modena, ${reggio} para Reggio Emilia`,
+      contact: '*Para cualquier problema o duda contactar*:',
+    },
+  },
 } satisfies Record<string, LanguageConfig>;
 
 // --- Script Helpers ---
 const getCoreScript = () => `
 /** AUTO FILL EVENT FORM SCRIPT (Generated) */
 async function autoFillEventForm(data) {
-    console.log("🚀 Starting Auto-fill process V2...");
+    console.log("Starting Auto-fill process V2...");
     const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const setInputValue = (domElement, value) => {
-        if (!domElement) { console.warn(\`⚠️ Input not found for: "\${value}"\`); return; }
+        if (!domElement) { console.warn(\`Input not found for: "\${value}"\`); return; }
         domElement.value = value;
         domElement.dispatchEvent(new Event('input', { bubbles: true }));
         domElement.dispatchEvent(new Event('change', { bubbles: true }));
         domElement.dispatchEvent(new Event('blur', { bubbles: true }));
     };
     const clickElement = (domElement, label = "element") => {
-        if (!domElement) { console.warn(\`⚠️ Click target [\${label}] not found.\`); return; }
+        if (!domElement) { console.warn(\`Click target [\${label}] not found.\`); return; }
         domElement.click();
     };
     const typeIntoEditor = async (selector, text) => {
         const el = document.querySelector(selector);
         if (!el) return;
+        console.log(\`Typing into editor [\${selector}]: "\${text}"\`);
         clickElement(el, "Editor Focus");
         await wait(200);
-        const success = document.execCommand('insertText', false, text);
-        if (!success) { el.textContent = text; el.dispatchEvent(new Event('input', { bubbles: true })); }
+        const editorElement = document.querySelector('.ace_editor');
+        if (editorElement) {
+            const editor = ace.edit(editorElement);
+            editor.setValue(text); // Replace all content instead of inserting
+            editor.clearSelection(); // Clear selection after setting value
+        } else {
+            console.warn("Ace editor not found");
+        }
+        console.log("Text insertion attempted, waiting for UI to update...");
         await wait(200);
     };
 
@@ -327,7 +355,7 @@ const server = Bun.serve({
         const result = DescSchema.safeParse(body);
         if (!result.success)
           return Response.json(
-            { errors: result.error.format() },
+            { errors: result.error.issues },
             { status: 400, headers },
           );
 

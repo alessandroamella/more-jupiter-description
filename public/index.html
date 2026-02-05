@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
   <!-- Alpine JS for logic -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"
+    integrity="sha256-WCzAhd2P6gRJF9Hv3oOOd+hFJi/QJbv+Azn4CGB8gfY=" crossorigin="anonymous"></script>
   <style>
     :root {
       --primary: #00aabb;
@@ -56,7 +58,7 @@
 </head>
 
 <body>
-  <main class="container" x-data="app()">
+  <main class="container" x-data="app()" x-init="init()">
     <hgroup>
       <h1>Jupiter ESN MoRe!!</h1>
       <h2>Per far prima a scrivere gli eventi su Jupiter</h2>
@@ -312,6 +314,44 @@
           newbiesEnabled: true,
           alumniEnabled: false,
           partecipantiEnabled: true
+        },
+
+        init() {
+          this.loadFromCookie();
+          // Watch for changes and save to cookies
+          Alpine.effect(() => {
+            JSON.stringify(this.descForm);
+            this.saveToCookie('descForm', this.descForm);
+          });
+          Alpine.effect(() => {
+            JSON.stringify(this.scriptForm);
+            this.saveToCookie('scriptForm', this.scriptForm);
+          });
+        },
+
+        saveToCookie(key, value) {
+          Cookies.set(key, JSON.stringify(value), { expires: 365, path: '/' });
+        },
+
+        loadFromCookie() {
+          const descFormCookie = Cookies.get('descForm');
+          if (descFormCookie) {
+            try {
+              const saved = JSON.parse(descFormCookie);
+              this.descForm = { ...this.descForm, ...saved };
+            } catch (e) {
+              console.error('Error loading descForm from cookie', e);
+            }
+          }
+          const scriptFormCookie = Cookies.get('scriptForm');
+          if (scriptFormCookie) {
+            try {
+              const saved = JSON.parse(scriptFormCookie);
+              this.scriptForm = { ...this.scriptForm, ...saved };
+            } catch (e) {
+              console.error('Error loading scriptForm from cookie', e);
+            }
+          }
         },
 
         // Helper to format dates for display

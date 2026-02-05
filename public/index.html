@@ -42,6 +42,16 @@
       background: var(--primary);
       color: white;
     }
+
+    .mobile-only {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-only {
+        display: block;
+      }
+    }
   </style>
 </head>
 
@@ -83,6 +93,14 @@
               <button type="button" class="small" @click="translateToEnglish()">Traduci ->🇬🇧</button>
               <button type="button" class="small" @click="translateToSpanish()">Traduci ->🇪🇸</button>
             </div>
+            <blockquote style="margin-top: -4px;" class="mobile-only"><small><strong>Nota ❗</strong> da telefono è
+                stupido e apre Translate senza
+                il
+                testo né la lingua preimpostata
+                <em>(quindi è un tasto "apri Google Traduttore" glorificato)</em>; da computer worka, però a prescindere
+                se vuoi
+                auto-compilare (aka che ti scriva tutto da solo su Jupiter, step dopo) ti serve la console (F12) e
+                quindi essere da computer</small></blockquote>
           </label>
           <label>Descrizione breve (🇬🇧)
             <textarea x-model="descForm.shortDescriptions.en"></textarea>

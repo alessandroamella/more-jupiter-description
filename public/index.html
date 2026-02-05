@@ -146,6 +146,7 @@
         </div>
 
         <button type="submit" :aria-busy="loading">Genera descrizione</button>
+        <button class="secondary outline" type="button" @click="resetDesc()">Resetta descrizione</button>
       </form>
 
       <div x-show="descGenerated" style="margin-top: 20px;">
@@ -244,6 +245,7 @@
         </fieldset>
 
         <button type="submit" :aria-busy="loading">Vai!!</button>
+        <button class="secondary outline" type="button" @click="resetScript()">Resetta script</button>
       </form>
 
       <div x-show="scriptGenerated" style="margin-top: 20px;">
@@ -267,11 +269,41 @@
 
   <script>
     document.addEventListener('alpine:init', () => {
-      const curDate = new Date();
+      const getCurDate = () => {
+        const curDate = new Date();
+        curDate.setHours(curDate.getHours() + 1);
+        curDate.setMinutes(0, 0, 0);
+        return curDate.toISOString().slice(0, 16);
+      };
 
-      // round date to next hour
-      curDate.setHours(curDate.getHours() + 1);
-      curDate.setMinutes(0, 0, 0);
+      const initialDescFormData = {
+        eventName: "Aperitivo bello",
+        fee: 5,
+        location: "Bel bar",
+        shortDescriptions: { it: "Un bell'evento...", en: "A nice event...", es: "Un evento bonito..." },
+        fidelityPointsModena: 1,
+        fidelityPointsReggio: 1,
+        contactName: "Mario Rossi",
+        contactPhone: "+393331234567"
+      };
+
+      const initialScriptFormData = {
+        title: "",
+        placeName: "",
+        placeAddress: "",
+        descriptionIT: "",
+        descriptionEN: "",
+        descriptionES: "",
+        maxParticipants: 50,
+        maxWaitingList: 10,
+        autoConfirm: true,
+        esnCardRequired: true,
+        exchangeStudentsEnabled: true,
+        esnersEnabled: true,
+        newbiesEnabled: true,
+        alumniEnabled: false,
+        partecipantiEnabled: true
+      };
 
       Alpine.data('app', () => ({
         tab: 'desc',
@@ -283,40 +315,9 @@
         copyFeedback: { it: '', en: '', es: '', script: '' },
 
         // Initial Data
-        descForm: {
-          eventName: "Aperitivo bello",
-          fee: 5,
-          location: "Bel bar",
-          shortDescriptions: { it: "Un bell'evento...", en: "A nice event...", es: "Un evento bonito..." },
-          eventDate: curDate.toISOString().slice(0, 16),
-          registrationDeadline: curDate.toISOString().slice(0, 16),
-          paymentDeadline: curDate.toISOString().slice(0, 16),
-          fidelityPointsModena: 1,
-          fidelityPointsReggio: 1,
-          contactName: "Mario Rossi",
-          contactPhone: "+393331234567"
-        },
+        descForm: { ...initialDescFormData, eventDate: getCurDate(), registrationDeadline: getCurDate(), paymentDeadline: getCurDate() },
 
-        scriptForm: {
-          title: "",
-          placeName: "",
-          placeAddress: "",
-          eventStart: curDate.toISOString().slice(0, 16),
-          eventEnd: curDate.toISOString().slice(0, 16),
-          registrationStart: curDate.toISOString().slice(0, 16),
-          registrationEnd: curDate.toISOString().slice(0, 16),
-          descriptionIT: "",
-          descriptionEN: "",
-          maxParticipants: 50,
-          maxWaitingList: 10,
-          autoConfirm: true,
-          esnCardRequired: true,
-          exchangeStudentsEnabled: true,
-          esnersEnabled: true,
-          newbiesEnabled: true,
-          alumniEnabled: false,
-          partecipantiEnabled: true
-        },
+        scriptForm: { ...initialScriptFormData, eventStart: getCurDate(), eventEnd: getCurDate(), registrationStart: getCurDate(), registrationEnd: getCurDate() },
 
         init() {
           this.loadFromCookie();
@@ -372,7 +373,7 @@
 
         // Helper to format dates for API (ISO String)
         toIso(dateStr) {
-          if (!dateStr) return curDate.toISOString();
+          if (!dateStr) return new Date().toISOString();
           return new Date(dateStr).toISOString();
         },
 
@@ -407,6 +408,16 @@
           } finally {
             this.loading = false;
           }
+        },
+
+        resetDesc() {
+          const curDateStr = getCurDate();
+          this.descForm = { ...initialDescFormData, eventDate: curDateStr, registrationDeadline: curDateStr, paymentDeadline: curDateStr };
+          this.descResult = { it: '', en: '', es: '' };
+          this.descGenerated = false;
+          this.copyFeedback.it = '';
+          this.copyFeedback.en = '';
+          this.copyFeedback.es = '';
         },
 
         // Helper to move data from Tab 1 to Tab 2
@@ -454,6 +465,14 @@
           } finally {
             this.loading = false;
           }
+        },
+
+        resetScript() {
+          const curDateStr = getCurDate();
+          this.scriptForm = { ...initialScriptFormData, eventStart: curDateStr, eventEnd: curDateStr, registrationStart: curDateStr, registrationEnd: curDateStr };
+          this.scriptResult = '';
+          this.scriptGenerated = false;
+          this.copyFeedback.script = '';
         },
 
         translateToEnglish() {
